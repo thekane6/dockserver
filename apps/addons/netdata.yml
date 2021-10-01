@@ -5,7 +5,7 @@ services:
     container_name: 'netdata'
     hostname: 'netdata'
     restart: '${RESTARTAPP}'
-    image: 'netdata/netdata'
+    image: 'netdata/netdata:latest'
     networks:
       - proxy
     ports:
@@ -17,6 +17,8 @@ services:
     environment:
       - 'PGID=${ID}'
       - 'PUID=${ID}'
+      - 'TZ=${TZ}'
+      - 'UMASK=${UMASK}'      
     volumes:
       - 'netdataconfig:/etc/netdata'
       - 'netdatalib:/var/lib/netdata'
@@ -26,8 +28,6 @@ services:
       - '/proc:/host/proc:ro'
       - '/sys:/host/sys:ro'
       - '/etc/os-release:/host/etc/os-release:ro'
-      - '${APPFOLDER}/netdata/health.d:/etc/netdata/health.d:rw'
-      - '${APPFOLDER}/netdata/netdata.conf:/etc/netdata/netdata.conf:rw'
     labels:
       - 'traefik.enable=true'
       - 'traefik.docker.network=proxy'
@@ -42,7 +42,7 @@ services:
 volumes:
   netdataconfig:
   netdatalib:
-  netdatacache:
+  netdatacache:      
 networks:
   proxy:
     driver: bridge

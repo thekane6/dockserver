@@ -406,7 +406,7 @@ EOF
   if [[ ${section} == "mediaserver" || ${section} == "encoder" ]];then
      gpu="Intel NVIDIA"
      for i in ${gpu};do
-        TDV=$(lspci | grep -i --color 'vga\|3d\|2d' | grep -E $i 1>/dev/null 2>&1 && echo true || echo false)
+        TDV=$(lspci | grep -i --color 'vga\|display\|3d\|2d' | grep -E $i 1>/dev/null 2>&1 && echo true || echo false)
         if [[ $TDV == "true" ]];then $(command -v rsync) $appfolder/${section}/.gpu/$i.yml $basefolder/$composeoverwrite -aqhv;fi
      done
      if [[ -f $basefolder/$composeoverwrite ]];then
@@ -475,7 +475,7 @@ EOF
      checkmnt=$($(command -v mountpoint) -q /mnt/unionfs && echo true || echo false)
      checkrcc=$($(command -v mountpoint) -q /mnt/rclone_cache && echo true || echo false)
      checkrmt=$($(command -v mountpoint) -q /mnt/remotes && echo true || echo false)
-        mount=$($(command -v docker) ps -aq --format={{.Names}} | grep -x 'mount')
+     mount=$($(command -v docker) ps -aq --format={{.Names}} | grep -x 'mount')
      if [[ ${checkmnt} == "true" && ${mount} == "mount" ]];then $(command -v docker) stop mount 1>/dev/null 2>&1 && $(command -v fusermount) -uzq /mnt/unionfs 1>/dev/null 2>&1;fi
      if [[ ${checkmnt} == "false" && ${mount} == "mount" ]];then $(command -v docker) stop mount 1>/dev/null 2>&1 && $(command -v fusermount) -uzq /mnt/unionfs 1>/dev/null 2>&1;fi
      if [[ ${checkmnt} == "false" && ${mount} == "" ]];then $(command -v fusermount) -uzq /mnt/unionfs 1>/dev/null 2>&1;fi
@@ -485,10 +485,6 @@ EOF
      if [[ ${checkrmt} == "true" && ${mount} == "mount" ]];then $(command -v docker) stop mount 1>/dev/null 2>&1 && $(command -v fusermount) -uzq /mnt/remotes 1>/dev/null 2>&1;fi
      if [[ ${checkrmt} == "false" && ${mount} == "mount" ]];then $(command -v docker) stop mount 1>/dev/null 2>&1 && $(command -v fusermount) -uzq /mnt/remotes 1>/dev/null 2>&1;fi
      if [[ ${checkrmt} == "false" && ${mount} == "" ]];then $(command -v fusermount) -uzq /mnt/remotes 1>/dev/null 2>&1;fi
-	 dockers=$($(command -v docker) ps -aq --format '{{.Names}}' | sed '/^$/d' | grep -E 'ple|arr|emby|jelly')
-     for doc in ${dockers};do
-         $(command -v docker) stop $doc >> /dev/null
-     done
   fi
   if [[ ${section} == "downloadclients" && ${typed} == "youtubedl-material" ]];then
      folder="appdata audio video subscriptions"
